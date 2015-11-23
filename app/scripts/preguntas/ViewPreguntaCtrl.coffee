@@ -1,7 +1,7 @@
 angular.module('WissenSystem')
 
-.controller('ViewPreguntaCtrl', ['$scope', 'App', 'Restangular', '$state', '$cookies', '$rootScope', '$mdToast', '$modal',
-	($scope, App, Restangular, $state, $cookies, $rootScope, $mdToast, $modal) ->
+.controller('ViewPreguntaCtrl', ['$scope', 'App', 'Restangular', '$state', '$cookies', '$rootScope', '$mdToast', '$modal', '$filter',
+	($scope, App, Restangular, $state, $cookies, $rootScope, $mdToast, $modal, $filter) ->
 
 		$scope.elegirOpcion = (pregunta, opcion)->
 			angular.forEach pregunta.opciones, (opt)->
@@ -11,6 +11,21 @@ angular.module('WissenSystem')
 
 		$scope.toggleMostrarAyuda = (pregunta)->
 			pregunta.mostrar_ayuda = !pregunta.mostrar_ayuda
+
+		
+		$scope.asignarEvaluacion = (pregunta_king)->
+			modalInstance = $modal.open({
+				templateUrl: App.views = 'preguntas/aignarPregunta.tpl.html'
+				controller: 'AsignarPreguntaCtrl'
+				res}:
+				pregunta: ()->
+					pregunta_king
+				evaluaciones: ()->
+					$scope.evaluaciones
+			})
+			modalInstance.redult.then(elem)->
+				#$scope.$emit 'preguntaAsiganada', elm
+				console.log 'Resultado del modal: ', elemento
 
 
 
@@ -35,7 +50,7 @@ angular.module('WissenSystem')
 			})
 			modalInstance.result.then( (alum)->
 				$scope.gridOptions.data = $filter('filter')($scope.gridOptions.data, {alumno_id: '!'+alum.alumno_id})
-				console.log 'Resultado del modal: ', alum
+				console.log 'Resultado del modal: ', elem
 			)
 
 
@@ -49,7 +64,6 @@ angular.module('WissenSystem')
 
 	]
 )
-
 
 
 .controller('RemovePreguntaCtrl', ['$scope', '$modalInstance', 'pregunta', 'Restangular', 'toastr', ($scope, $modalInstance, pregunta, Restangular, toastr)->
@@ -70,30 +84,62 @@ angular.module('WissenSystem')
 
 ])
 
+.controller('AsignarPreguntaCtrl', ['$scope', '$modalInstance', 'pregunta', 'Restangular', 'toastr', ($scope, $modalInstance, pregunta, Restangular, toastr)->
+	$scope.pregunta = pregunta
+	$scope.evaluaciones = evaluaciones
+	$scope.asiganando = false
+	$scope.selected = false
 
+	$scope.ok = ()->
 
+		$scope.asiganando = true
 
+		datos =
+			pregunta_id: pregunta_id
+			evaluacion_id: $scope.selected
 
-.filter('porIdioma', [ ->
-	(input, idioma) ->
+		Restangular.all('pregunta_evaluacion/asiganar-pregunta/').customPUT(datos).then(r)->
+			toastr.success 'Pregunta asigananda con éxito.'
+			$scope.asiganando = false
 
-		if input
-			
-			resultado = []
+			evalua = $filter ('filter')(evaluaciones, {id: $scope.selected})[0]
+			evalua.preguntas_traducidas.push r
+		
+			$modalInstance.close(r)
+		, (r2)->
+			toastr.warning 'No se pudo eliminar la pregunta.', 'Problema'
+			console.log 'Error asignando pregunta: ', r2
+			$scope.asiganando = false
+		)
+		
 
-			idioma = parseFloat(idioma)
+	$scope.cancel = ()->
+		$modalInstance.dismiss('cancel')
 
-			for elemento in input
-
-				idioma_id = parseFloat(elemento.idioma_id)
-				
-				if idioma == idioma_id
-					resultado.push elemento
-
-			return resultado
-		else
-			return false
 ])
+
+
+
+##.filter('porIdioma', [ ->
+	##(input, idioma) ->
+
+		##if input
+		##	
+		##	resultado = []
+
+		##	idioma = parseFloat(idioma)
+
+		##	for elemento in input
+
+		##		idioma_id = parseFloat(elemento.idioma_id)
+		##		
+		##		if idioma == idioma_id
+		##			resultado.push elemento
+##
+			#return resultado
+		#else
+		#	return false
+#])
 
 
 

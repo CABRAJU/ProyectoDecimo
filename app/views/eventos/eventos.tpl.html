@@ -82,7 +82,7 @@
 <md-whiteframe layout ng-repeat="evento in eventos" style="padding: 10px" class="md-whiteframe-z2 definicion-frame"><span flex="10">{{$index+1}}.</span><span flex="90">{{evento.nombre}}</span>
   <div layout="row" class="btn-container-edit">
     <md-button aria-label="Editar" ng-click="editarEvento(evento)" class="md-fab md-primary md-mini">
-      <md-icon class="fa fa-pencil"></md-icon>
+      <md-icon class="fa fa-pencil-square"></md-icon>
       <md-tooltip>Editar envento</md-tooltip>
     </md-button>
     <md-button aria-label="Eliminar" ng-click="eliminarEvento(evento)" class="md-fab md-warn md-mini">
@@ -169,3 +169,4 @@
     </div>
   </div>
 </div>
+<currentEvent></currentEvent>
